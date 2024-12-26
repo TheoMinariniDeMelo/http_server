@@ -9,8 +9,11 @@
 
   __init__()
 
+  def get_method()
+  def set_method(Method)
+
 - Response
-  setHeader(Header)
+  setHeader(header: Header)
 
   send(response)
   close()
