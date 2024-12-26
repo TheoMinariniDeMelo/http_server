@@ -1,12 +1,24 @@
-# DownloadManager
+# Http Client
 
-## Funções:
-- Instalar arquivos Arquivos HTTP
+- Header
+  method: Method | str = None
+  host: str = None
+  Content-Type: ContentType | str = None
+  Authorization: str = None
+  Content-Lenght: int = None
 
-## Input: 
-- DATA_URL
+  __init__()
 
-## DownloadManager
-- Requisição pra URL
-  -> Se der tudo certo 
-  -> Ler dados em blocos(Buffer), conforme ler os dados, armazenar em um arquivo.
+- Response
+  setHeader(Header)
+
+  send(response)
+  close()
+
+  __init__()
+
+- Request
+  header: Header
+  body: str
+
+  __init__()
