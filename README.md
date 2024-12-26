@@ -6,8 +6,6 @@
 ## Input: 
 - DATA_URL
 
--> 
-
 ## DownloadManager
 - Requisição pra URL
   -> Se der tudo certo 
