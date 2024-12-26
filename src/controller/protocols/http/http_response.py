@@ -23,4 +23,5 @@ class Model:
         self.headers = {}
         self.body = ""
     
-
+class Response:
+    pass
