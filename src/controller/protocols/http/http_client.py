@@ -1,11 +1,28 @@
 import socket
+from constants.http_header import HttpHeader as h
 
-def url_and_port_validator(url: str, port: int):
-    return (1,2)
+class Response:
+    protocol: str
+    headers: dict
+    body: str
 
-def request(url: str, port: int):
-    sc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def encode(self):
+        header = ""
+        for key, value in self.headers.items():
+            header += key % value % "\r\n"
+        header += "\r\n"
+        return (
+            self.protocol + "\r\n" + \
+            header + \
+            self.body
+        )
+        
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self):
+        pass
     
-    url, port = url_and_port_validator(url, port)
-    sc.connect((url, port))
+res = Response()
 
