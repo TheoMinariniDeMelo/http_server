@@ -51,12 +51,21 @@ class HttpHeader(Enum):
     VIA = "Via"
     WARNING = "Warning"
     WWW_AUTHENTICATE = "WWW-Authenticate"
+    
+    def __new__(cls, value): # Normalizar o valor para aceitar tanto maiúsculas quanto minúsculas
+        obj = object.__new__(cls) 
+        obj._value_ = value.lower() 
+        return obj
+    
+    @classmethod 
+    def _missing_(cls, value): # Verificar se o valor está no enum, independentemente de maiúsculas/minúsculas
+        for member in cls: 
+            if member.value == value.lower(): 
+                return member 
+        raise ValueError(f"{value} is not a valid {cls.__name__}")    
+
 
 # Função para imprimir o nome de um cabeçalho HTTP
 def print_http_header_name(header):
     print(header.value)
-
-# Exemplo de uso
-header = HttpHeaders.CONTENT_TYPE
-print_http_header_name(header)
 
