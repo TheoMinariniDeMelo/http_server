@@ -11,7 +11,7 @@ class SocketsExceptions(Enum):
     CONNECTION_RESET = (104, "Connection reset by peer: The connection was reset by the remote host.")
     HOST_UNREACHABLE = (112, "Host unreachable: The destination host is unreachable.") 
     NETWORK_DOWN = (100, "Network is down: The local network interface is not functioning.")
-
+    APPLICATION = (0, "Application Error")
     def __init__(self, code, description): 
         self.code = code 
         self.description = description

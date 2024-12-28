@@ -72,3 +72,49 @@ class HttpStatus(Enum):
     LOOP_DETECTED = 508
     NOT_EXTENDED = 510
     NETWORK_AUTHENTICATION_REQUIRED = 511
+
+    def __new__(cls, value):
+        if isinstance(value, str) and value.isdigit():
+            value = int(value)
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj
+
+    @classmethod
+    def _missing_(cls, value):
+        if isinstance(value, str) and value.isdigit():
+            value = int(value)
+        if isinstance(value, int):
+            for member in cls:
+                if member.value == value:
+                    return member
+        return None
+
+    @classmethod
+    def is_informational(cls, code: int) -> bool:
+        return 100 <= code < 200
+
+    @classmethod
+    def is_success(cls, code: int) -> bool:
+        return 200 <= code < 300
+
+    @classmethod
+    def is_redirection(cls, code: int) -> bool:
+        return 300 <= code < 400
+
+    @classmethod
+    def is_client_error(cls, code: int) -> bool:
+        return 400 <= code < 500
+
+    @classmethod
+    def is_server_error(cls, code: int) -> bool:
+        return 500 <= code < 600
+
+    @classmethod
+    def is_valid_status(cls, status: str):
+        """Check if a string represents a valid HTTP status code and return the corresponding enum."""
+        if not status.isdigit():
+            return None
+        code = int(status)
+        return cls._missing_(code)
+
