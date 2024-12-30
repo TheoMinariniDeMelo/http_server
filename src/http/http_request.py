@@ -1,6 +1,6 @@
 import socket
+import ssl
 from .constants.http_protocol import HttpProtocol
-from .constants.http_header import HttpHeader
 from .constants.http_status import HttpStatus
 from .entities.headers_entity_read_only import HeadersEntityReadOnly
 from .entities.request_entity import RequestEntity
@@ -12,34 +12,46 @@ class HttpRequest:
 
     def request(self) -> ResponseEntity:
         # Configuração do socket
-        sc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        url = self.__request.get_url().get_value().replace("http://", "")
+        domain = self.__request.get_url().get_domain()
         port = self.__request.get_port()
+        if self.__request.get_url().is_https_url():
+            return self.__request_https((domain, port))
+        return self.__request_http((domain, port))
 
-        # Resolvendo host e conectando
-        host = url.split(":")[0]
-        print(f"Conectando em {host}, {port}")
-        sc.connect((host, port))
+    def __request_https(self, address: tuple[str, int]):
+        context = ssl.create_default_context()
+        print(f"Conectando em {address}")
+        with socket.create_connection(address) as sock:
+            with context.wrap_socket(sock, server_hostname=address[0]) as ssock:
+                response = self.__recv_data(ssock)
+                sock.close()
+                return self.__process_request(response)
+
+    def __request_http(self, address: tuple[str, int]): 
+        # Resolvendo host e conectando 
+        sc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        print(f"Conectando em {address}")
+
+        sc.connect(address)
         sc.send(self.__request.encode())
         # Recebendo a resposta
-        response_data = self.__receive_data(sc)
+        response_data = self.__recv_data(sc)
         sc.close()
 
         # Processando a resposta
-        return self.process_request(response_data)
+        return self.__process_request(response_data)
 
-    def __receive_data(self, socket_connection: socket.socket, buffer_size: int = 1024) -> bytes:
+    def __recv_data(self, socket_connection: socket.socket, buffer_size: int = 1024) -> bytes:
         response = b''
         while True:
-            print("A")
             data = socket_connection.recv(buffer_size)
-            print("B")
             if not data:
                 break
             response += data
         return response
 
-    def process_request(self, response_b: bytes) -> ResponseEntity:
+    def __process_request(self, response_b: bytes) -> ResponseEntity:
         response_text = response_b.decode('UTF-8')
 
         # Extraindo partes da resposta
